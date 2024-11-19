@@ -100,46 +100,46 @@ def get_files_to_analyze():
         return []
 
 def analyze_file(client, file_path: str) -> AnalysisResult:
-    """Analiza un archivo individual"""
+    """Analyzes an individual file"""
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
     messages = [
-        {"role": "system", "content": """Analiza este código detalladamente y proporciona feedback específico para:
-            1. Principios de código limpio:
-               - Nombres de variables y funciones
-               - Estructura y organización
-               - Comentarios y documentación
-               - Duplicación de código
-            
-            2. Mejores prácticas de seguridad:
-               - Validación de entrada
-               - Manejo de datos sensibles
-               - Vulnerabilidades comunes
-            
-            3. Consideraciones de rendimiento:
-               - Optimización de algoritmos
-               - Uso de memoria
-               - Complejidad temporal
-            
-            4. Seguridad de tipos:
-               - Uso correcto de tipos
-               - Type hints
-               - Validación de tipos
-            
-            5. Manejo de errores:
-               - Try/catch apropiados
-               - Mensajes de error descriptivos
-               - Logging
-            
-            Para cada problema encontrado, proporciona:
-            - Severidad (alta/media/baja)
-            - Mensaje claro del problema
-            - Sugerencia específica de mejora
-            - Categoría del problema
-            - Línea de código específica cuando sea posible
-            
-            Asigna una puntuación de calidad del código de 0 a 100."""},
+        {"role": "system", "content": """Please analyze this code in detail and provide specific feedback for:
+1. Clean code principles:
+- Variable and function names
+- Structure and organization
+- Comments and documentation
+- Code duplication
+
+2. Security best practices:
+- Input validation
+- Sensitive data handling
+- Common vulnerabilities
+
+3. Performance considerations:
+- Algorithm optimization
+- Memory usage
+- Time complexity
+
+4. Type safety:
+- Correct type usage
+- Type hints
+- Type validation
+
+5. Error handling:
+- Appropriate try/catch
+- Descriptive error messages
+- Logging
+
+For each issue found, provide:
+- Severity (high/medium/low)
+- Clear problem message
+- Specific suggestion for improvement
+- Problem category
+- Specific line of code when possible
+
+Assign a code quality score from 0 to 100."""},
         {"role": "user", "content": f"Archivo {file_path}:\\n{content}"}
     ]
 
@@ -159,29 +159,29 @@ def main():
     files_to_check = get_files_to_analyze()
 
     if not files_to_check:
-        print("No se encontraron archivos para analizar")
+        print("No files found to analyze")
         sys.exit(0)
 
     total_issues = []
     all_scores = []
     failed = False
 
-    print("\\n🔍 Iniciando análisis de código...")
+    print("\\n🔍 Starting code analysis...")
     print("=" * 80)
 
     for file_path in files_to_check:
-        print(f"\\n📝 Analizando {file_path}...")
+        print(f"\\n📝 Analyzing {file_path}...")
         try:
             result = analyze_file(client, file_path)
             all_scores.append(result.code_quality_score)
             
-            print(f"\\n📊 Puntuación de calidad: {result.code_quality_score}/100")
+            print(f"\\n📊 Quality Score: {result.code_quality_score}/100")
             
             if not result.passed or result.code_quality_score < 70:
                 failed = True
                 total_issues.extend(result.issues)
-                print(f"\\n⚠️ Problemas encontrados en {file_path}:")
-                print(f"Resumen: {result.summary}")
+                print(f"\\n⚠️ Problems encountered in {file_path}:")
+                print(f"Summary: {result.summary}")
                 
                 issues_by_category = {}
                 for issue in result.issues:
@@ -192,27 +192,27 @@ def main():
                 for category, issues in issues_by_category.items():
                     print(f"\\n📌 {category.upper()}:")
                     for issue in issues:
-                        print(f"\\n  Severidad: {issue.severity}")
-                        print(f"  Problema: {issue.message}")
-                        print(f"  Sugerencia: {issue.suggestion}")
+                        print(f"\\n  Severity: {issue.severity}")
+                        print(f"  Problem: {issue.message}")
+                        print(f"  Advice: {issue.suggestion}")
                         if issue.line_number:
-                            print(f"  Línea: {issue.line_number}")
+                            print(f"  Line: {issue.line_number}")
                         print("  " + "-" * 40)
 
         except Exception as e:
-            print(f"❌ Error analizando {file_path}: {str(e)}")
+            print(f"❌ Error parsing {file_path}: {str(e)}")
             sys.exit(1)
 
     print("\\n" + "=" * 80)
     if len(all_scores) > 0:
         avg_score = sum(all_scores) / len(all_scores)
-        print(f"\\n📊 Puntuación promedio del proyecto: {avg_score:.2f}/100")
+        print(f"\\n📊 Average project score: {avg_score:.2f}/100")
 
     if failed:
-        print("\\n❌ Revisión fallida. Por favor, corrige los problemas antes de commitear.")
+        print("\\n❌ Review failed. Please fix the issues before committing.")
         sys.exit(1)
     else:
-        print("\\n✅ ¡Todos los archivos pasaron la revisión!")
+        print("\\n✅ All files passed review!")
         sys.exit(0)
 
 if __name__ == "__main__":
@@ -254,10 +254,10 @@ def get_files_to_analyze():
                 valid_files.append(file)
         
         if not valid_files:
-            print("\n💡 No se encontraron archivos nuevos o staged para analizar")
-            print("   Para analizar archivos:")
-            print("   1. Crea nuevos archivos .py, .ts o .mjs")
-            print("   2. O modifica archivos existentes y haz 'git add'")
+            print("\n💡 No new or staged files found to analyze")
+            print(" To analyze files:")
+            print(" 1. Create new .py, .ts or .mjs files")
+            print(" 2. Or modify existing files and do 'git add'")
             
         return valid_files
         
@@ -271,12 +271,12 @@ def analyze_file(client, file_path: str) -> AnalysisResult:
         content = f.read()
     
     messages = [
-        {"role": "system", "content": """Analiza este código detalladamente para:
-            1. Principios de código limpio
-            2. Mejores prácticas de seguridad
-            3. Consideraciones de rendimiento
-            4. Seguridad de tipos
-            5. Manejo de errores"""},
+        {"role": "system", "content": """Analyze this code closely for:
+        1. Clean code principles
+        2. Security best practices
+        3. Performance considerations
+        4. Type safety
+        5. Error handling"""},
         {"role": "user", "content": f"Archivo {file_path}:\n{content}"}
     ]
 
@@ -287,18 +287,18 @@ def analyze_file(client, file_path: str) -> AnalysisResult:
     )
 
 def analyze_setup_files(repo_path: str, client) -> bool:
-    """Analiza los archivos de configuración antes de instalarlos"""
+    """Scan configuration files before installing them"""
     setup_files = [
         ('pre_commit_code_check.py', CODE_CHECK_CONTENT),
         ('setup_code_review.py', Path(__file__).read_text())
     ]
     
-    print("\n🔍 Analizando archivos de configuración...")
+    print("\n🔍 Parsing configuration files...")
     print("=" * 80)
     
     all_passed = True
     for filename, content in setup_files:
-        print(f"\n📝 Analizando {filename}...")
+        print(f"\n📝 Analyzing {filename}...")
         
         # Crear archivo temporal para análisis
         temp_path = os.path.join(repo_path, filename)
@@ -307,12 +307,12 @@ def analyze_setup_files(repo_path: str, client) -> bool:
             
         try:
             result = analyze_file(client, temp_path)
-            print(f"\n📊 Puntuación de calidad: {result.code_quality_score}/100")
+            print(f"\n📊 Quality Score: {result.code_quality_score}/100")
             
             if not result.passed or result.code_quality_score < 70:
                 all_passed = False
-                print(f"\n⚠️ Problemas encontrados en {filename}:")
-                print(f"Resumen: {result.summary}")
+                print(f"\n⚠️ Problems encountered in {filename}:")
+                print(f"Sumamry: {result.summary}")
                 
                 issues_by_category = {}
                 for issue in result.issues:
@@ -323,15 +323,15 @@ def analyze_setup_files(repo_path: str, client) -> bool:
                 for category, issues in issues_by_category.items():
                     print(f"\n📌 {category.upper()}:")
                     for issue in issues:
-                        print(f"\n  Severidad: {issue.severity}")
-                        print(f"  Problema: {issue.message}")
-                        print(f"  Sugerencia: {issue.suggestion}")
+                        print(f"\n  Severity: {issue.severity}")
+                        print(f"  Problem: {issue.message}")
+                        print(f"  Advice: {issue.suggestion}")
                         if issue.line_number:
-                            print(f"  Línea: {issue.line_number}")
+                            print(f"  Line: {issue.line_number}")
                         print("  " + "-" * 40)
             
         except Exception as e:
-            print(f"❌ Error analizando {filename}: {str(e)}")
+            print(f"❌ Error parsing {filename}: {str(e)}")
             all_passed = False
             
         os.remove(temp_path)  # Limpiar archivo temporal
@@ -339,11 +339,9 @@ def analyze_setup_files(repo_path: str, client) -> bool:
     return all_passed
 
 def create_files(repo_path):
-    # Crear pre_commit_code_check.py
     with open(os.path.join(repo_path, 'pre_commit_code_check.py'), 'w') as f:
         f.write(CODE_CHECK_CONTENT.strip())
     
-    # Crear .pre-commit-config.yaml
     precommit_config_content = '''
 repos:
 -   repo: local
@@ -352,8 +350,11 @@ repos:
         name: Code Review AI
         entry: python pre_commit_code_check.py
         language: python
-        types: [python, typescript, javascript]
+        types: [python, typescript, javascript, sql, css, html]
+        additional_dependencies: []
+        files: \.(py|ts|js|sql|css|html|ipynb)$
         pass_filenames: false
+
 '''
     with open(os.path.join(repo_path, '.pre-commit-config.yaml'), 'w') as f:
         f.write(precommit_config_content.strip())
@@ -384,25 +385,25 @@ def analyze_repository(repo_path: str):
     files_to_check = get_files_to_analyze()
 
     if not files_to_check:
-        print("\n⚠️ No se encontraron archivos para analizar")
-        print("💡 El análisis incluye:")
-        print("   1. Archivos nuevos (untracked)")
-        print("   2. Archivos modificados (unstaged)")
-        print("   3. Archivos staged para commit")
-        print("   Solo archivos: .py, .ts, .mjs")
+        print("\n⚠️ No files found to scan")
+        print("💡 Scan includes:")
+        print(" 1. New files (untracked)")
+        print(" 2. Modified files (unstaged)")
+        print(" 3. Files staged for commit")
+        print(" Files only: .py, .ts, .mjs")
         return
 
     total_issues = []
     all_scores = []
 
-    print("\n🔍 Iniciando análisis de código...")
+    print("\n🔍Starting code analysis...")
     print("=" * 80)
 
     for file_path in files_to_check:
         full_path = os.path.join(repo_path, file_path)
         
         if not os.path.exists(full_path):
-            print(f"\n⚠️ El archivo {file_path} no existe en el repositorio")
+            print(f"\n⚠️The file {file_path} does not exist in the repository")
             continue
 
         # Get file status
@@ -416,18 +417,18 @@ def analyze_repository(repo_path: str):
         else:
             status = "[Modificado]"
             
-        print(f"\n📝 Analizando {file_path} {status}...")
+        print(f"\n📝 Analizing {file_path} {status}...")
         
         try:
             result = analyze_file(client, full_path)
             all_scores.append(result.code_quality_score)
             
-            print(f"\n📊 Puntuación de calidad: {result.code_quality_score}/100")
+            print(f"\n📊 Quality Score: {result.code_quality_score}/100")
             
             if not result.passed or result.code_quality_score < 70:
                 total_issues.extend(result.issues)
-                print(f"\n⚠️ Problemas encontrados en {file_path}:")
-                print(f"Resumen: {result.summary}")
+                print(f"\n⚠️ Problems encountered in {file_path}:")
+                print(f"Summary: {result.summary}")
                 
                 issues_by_category = {}
                 for issue in result.issues:
@@ -438,23 +439,23 @@ def analyze_repository(repo_path: str):
                 for category, issues in issues_by_category.items():
                     print(f"\n📌 {category.upper()}:")
                     for issue in issues:
-                        print(f"\n  Severidad: {issue.severity}")
-                        print(f"  Problema: {issue.message}")
-                        print(f"  Sugerencia: {issue.suggestion}")
+                        print(f"\n  Severity: {issue.severity}")
+                        print(f"  Problem: {issue.message}")
+                        print(f"  Advice: {issue.suggestion}")
                         if issue.line_number:
                             print(f"  Línea: {issue.line_number}")
                         print("  " + "-" * 40)
 
         except Exception as e:
-            print(f"❌ Error analizando {file_path}: {str(e)}")
+            print(f"❌ Error parsing {file_path}: {str(e)}")
 
     if all_scores:
         avg_score = sum(all_scores) / len(all_scores)
-        print(f"\n📊 Puntuación promedio del proyecto: {avg_score:.2f}/100")
+        print(f"\n📊 Average project score: {avg_score:.2f}/100")
 
 def setup_repository():
-    print("🔍 Ingresa la ruta del repositorio que quieres revisar")
-    print("(Presiona Enter para usar el directorio actual)")
+    print("🔍 Enter the path of the repository you want to check out")
+    print("(Press Enter to use the current directory)")
     
     repo_path = input("Ruta: ").strip()
     
@@ -462,39 +463,39 @@ def setup_repository():
         repo_path = os.getcwd()
     
     if not os.path.exists(repo_path):
-        print("❌ La ruta especificada no existe")
+        print("❌ The specified route does not exist")
         sys.exit(1)
 
-    print(f"\n📂 Repositorio seleccionado: {repo_path}")
+    print(f"\n📂Selected repository: {repo_path}")
 
     if not os.path.exists(os.path.join(repo_path, '.git')):
-        print("⚠️ Inicializando git en el repositorio...")
+        print("⚠️ Initializing git on the repository...")
         subprocess.run(['git', 'init'], cwd=repo_path)
         subprocess.run(['git', 'checkout', '-b', 'main'], cwd=repo_path)
 
-    print("\n📝 Creando archivos de configuración...")
+    print("\n📝 Creating configuration files...")
     create_files(repo_path)
 
-    print("\n📦 Instalando dependencias...")
+    print("\n📦 Installing dependencies...")
     subprocess.run(['pip', 'install', '-r', 'requirements.txt'], cwd=repo_path)
 
-    print("\n⚙️ Configurando pre-commit...")
+    print("\n⚙️ Setting up pre-commit...")
     subprocess.run(['pre-commit', 'install'], cwd=repo_path)
 
     # Configurar API key en .env
     env_path = os.path.join(repo_path, '.env')
     if not os.path.exists(env_path):
-        api_key = input("\n🔑 Ingresa tu OpenAI API key: ").strip()
+        api_key = input("\n🔑 Enter your OpenAI API key: ").strip()
         with open(env_path, 'w') as f:
             f.write(f'OPENAI_API_KEY={api_key}\n')
 
-    print("\n✅ Configuración completada!")
-    print("\n💡 El pre-commit hook está instalado y listo para:")
-    print("   1. Analizar nuevos archivos (.py, .ts, .mjs) cuando uses 'git add'")
-    print("   2. Revisar el código antes de cada commit")
-    print("\nPara usar:")
-    print("   1. Modifica o crea nuevos archivos")
-    print("   2. Usa 'git add' en los archivos que quieres commitear")
-    print("   3. El análisis se ejecutará automáticamente al hacer 'git commit'")
+    print("\n✅ Setup complete!")
+    print("\n💡 The pre-commit hook is installed and ready to:")
+    print(" 1. Scan new files (.py, .ts, .mjs) when using 'git add'")
+    print(" 2. Review code before each commit")
+    print("\nTo use:")
+    print(" 1. Modify or create new files")
+    print(" 2. Use 'git add' on the files you want to commit")
+    print(" 3. Scanning will run automatically when doing 'git commit'")
 if __name__ == "__main__":
     setup_repository()
