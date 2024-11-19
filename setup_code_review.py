@@ -8,7 +8,6 @@ from openai import OpenAI
 from pydantic import BaseModel
 from typing import List, Optional
 
-# Cargar variables de entorno
 load_dotenv()
 
 class IssueCode(BaseModel):
@@ -25,7 +24,6 @@ class AnalysisResult(BaseModel):
     summary: str
     code_quality_score: int
 
-# Contenido del archivo pre_commit_code_check.py
 CODE_CHECK_CONTENT = '''
 import os
 import sys
@@ -359,7 +357,6 @@ repos:
     with open(os.path.join(repo_path, '.pre-commit-config.yaml'), 'w') as f:
         f.write(precommit_config_content.strip())
     
-    # Crear requirements.txt
     requirements_content = '''
 instructor>=1.6.4
 openai>=1.12.0
@@ -482,7 +479,6 @@ def setup_repository():
     print("\n⚙️ Setting up pre-commit...")
     subprocess.run(['pre-commit', 'install'], cwd=repo_path)
 
-    # Configurar API key en .env
     env_path = os.path.join(repo_path, '.env')
     if not os.path.exists(env_path):
         api_key = input("\n🔑 Enter your OpenAI API key: ").strip()
