@@ -246,7 +246,7 @@ def get_files_to_analyze():
         valid_files = []
         for file in all_files:
             full_path = os.path.join(repo_path, file)
-            if (file.endswith(('.py', '.ts', '.mjs')) and 
+            if (file.endswith(('.py', '.ts', '.mjs', '.js', '.sql', '.css', '.html', '.ipynb')) and 
                 os.path.exists(full_path) and 
                 os.path.isfile(full_path)):
                 valid_files.append(file)
@@ -254,8 +254,9 @@ def get_files_to_analyze():
         if not valid_files:
             print("\n💡 No new or staged files found to analyze")
             print(" To analyze files:")
-            print(" 1. Create new .py, .ts or .mjs files")
+            print(" 1. Create new .py, .ts, .mjs, .js, .sql, .css, .html, or .ipynb files")
             print(" 2. Or modify existing files and do 'git add'")
+
             
         return valid_files
         
@@ -350,10 +351,10 @@ repos:
         language: python
         types: [python, typescript, javascript, sql, css, html]
         additional_dependencies: []
-        files: \.(py|ts|js|sql|css|html|ipynb)$
+        files: \.(py|ts|mjs|js|sql|css|html|ipynb)$
         pass_filenames: false
-
 '''
+
     with open(os.path.join(repo_path, '.pre-commit-config.yaml'), 'w') as f:
         f.write(precommit_config_content.strip())
     
